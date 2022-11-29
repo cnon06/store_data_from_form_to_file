@@ -2,7 +2,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:storage/const.dart';
 import 'package:storage/models/user_info.dart';
-import 'package:storage/services/shared_pref_service.dart';
+import 'package:storage/services/file_storage_service.dart';
+
 
 class SharedPref extends StatefulWidget {
   const SharedPref({Key? key}) : super(key: key);
@@ -12,7 +13,8 @@ class SharedPref extends StatefulWidget {
 }
 
 class _SharedPrefState extends State<SharedPref> {
-  final sharedPreferencesService = SharedPreferencService();
+  
+  final fileStorageService = FileStorageService();
   final _textFieldController = TextEditingController();
 
   Gender? _gender = Gender.MALE;
@@ -23,7 +25,9 @@ class _SharedPrefState extends State<SharedPref> {
 
   @override
   void initState() {
+
     _getData();
+    
 
     super.initState();
   }
@@ -63,11 +67,21 @@ class _SharedPrefState extends State<SharedPref> {
               }),
           TextButton(
               onPressed: () {
-                sharedPreferencesService.saveDatas(UserInfo(
+                final fileSave = FileStorageService();
+                
+                
+
+                fileSave.writeToFile(UserInfo(
                     name: _textFieldController.text,
                     gender: _gender!.index,
                     colors: _selectedColors,
                     isStudent: _switchState));
+
+                
+                
+                
+                
+                
               },
               child: const Text("Save"))
         ],
@@ -107,7 +121,8 @@ class _SharedPrefState extends State<SharedPref> {
   }
 
   _getData() async {
-    final UserInfo userInfo = await sharedPreferencesService.getDatas();
+    
+   final UserInfo userInfo = await fileStorageService.readFromFile();
     _textFieldController.text = userInfo.name;
     _gender = Gender.values[userInfo.gender];
     _selectedColors = userInfo.colors;
